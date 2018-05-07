@@ -37,5 +37,8 @@ configure.log
 # tag files
 tags
 
+# pyenv
+.python-version
+
 build
 md-real-io

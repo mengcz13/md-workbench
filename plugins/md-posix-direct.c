@@ -124,6 +124,9 @@ static int write_obj(char * dirname, char * filename, char * buf, size_t file_si
   // ret = write(fd, buf, file_size);
   ret = write(fd, alignedbuf, aligned_file_size);
   ret = ( (size_t) ret == aligned_file_size) ? MD_SUCCESS: MD_ERROR_UNKNOWN;
+  /* if (ret == MD_ERROR_UNKNOWN) {
+      printf("error: %s\n", strerror(errno));
+  } */
   close(fd);
   free(tempbuf);
 
