@@ -17,12 +17,11 @@
 //
 // This file is for a posix interface using direct IO.
 // Author: Chuizheng Mneg
-
+#define _GNU_SOURCE
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdio.h>
-#define _GNU_SOURCE
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
