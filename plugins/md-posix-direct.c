@@ -26,8 +26,11 @@
 #include <string.h>
 #include <errno.h>
 #include <dirent.h>
+#include <stdint.h>
 
 #include <plugins/md-posix-direct.h>
+
+static int BLKSIZE = 512;
 
 static char * dir = "out";
 static int created_root_dir = 0;
@@ -112,9 +115,18 @@ static int write_obj(char * dirname, char * filename, char * buf, size_t file_si
   int fd;
   fd = open(filename, O_CREAT | O_TRUNC | O_DIRECT | O_RDWR, 0644);
   if (fd == -1) return MD_ERROR_CREATE;
-  ret = write(fd, buf, file_size);
-  ret = ( (size_t) ret == file_size) ? MD_SUCCESS: MD_ERROR_UNKNOWN;
+
+  size_t aligned_file_size = (file_size + BLKSIZE - 1) / BLKSIZE * BLKSIZE;
+  char* tempbuf = malloc(aligned_file_size + BLKSIZE);
+  char* alignedbuf = (char*)(((uintptr_t)tempbuf + BLKSIZE - 1) / BLKSIZE * BLKSIZE);
+  memcpy(alignedbuf, buf, file_size);
+
+  // ret = write(fd, buf, file_size);
+  ret = write(fd, alignedbuf, aligned_file_size);
+  ret = ( (size_t) ret == aligned_file_size) ? MD_SUCCESS: MD_ERROR_UNKNOWN;
   close(fd);
+  free(tempbuf);
+
   return ret;
 }
 
@@ -124,9 +136,18 @@ static int read_obj(char * dirname, char * filename, char * buf, size_t file_siz
   int ret;
   fd = open(filename, O_DIRECT | O_RDWR);
   if (fd == -1) return MD_ERROR_FIND;
-  ret = read(fd, buf, file_size);
-  ret = ( (size_t) ret == file_size) ? MD_SUCCESS: MD_ERROR_UNKNOWN;
+
+  size_t aligned_file_size = (file_size + BLKSIZE - 1) / BLKSIZE * BLKSIZE;
+  char* tempbuf = malloc(aligned_file_size + BLKSIZE);
+  char* alignedbuf = (char*)(((uintptr_t)tempbuf + BLKSIZE - 1) / BLKSIZE * BLKSIZE);
+
+  // ret = read(fd, buf, file_size);
+  ret = read(fd, alignedbuf, aligned_file_size);
+  ret = ( (size_t) ret == aligned_file_size) ? MD_SUCCESS: MD_ERROR_UNKNOWN;
+  memcpy(buf, alignedbuf, file_size);
+
   close(fd);
+  free(tempbuf);
   return ret;
 }
 
