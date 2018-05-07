@@ -34,5 +34,8 @@ configure.log
 *.dSYM/
 *.su
 
+# tag files
+tags
+
 build
 md-real-io
