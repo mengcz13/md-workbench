@@ -33,6 +33,7 @@
 
 #include <plugins/md-dummy.h>
 #include <plugins/md-posix.h>
+#include <plugins/md-posix-direct.h>
 #include <plugins/md-postgres.h>
 #include <plugins/md-mongo.h>
 #include <plugins/md-s3.h>
@@ -41,6 +42,7 @@
 struct md_plugin * md_plugin_list[] = {
 & md_plugin_dummy,
 & md_plugin_posix,
+& md_plugin_posix_direct,
 #ifdef MD_PLUGIN_MPIIO
 & md_plugin_mpi,
 #endif
